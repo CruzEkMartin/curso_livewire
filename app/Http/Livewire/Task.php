@@ -40,9 +40,17 @@ class Task extends Component
         $this->task = $task;
     }
 
+    //metodo para eliminar una tarea. se manda llamar desde el evento wire:click="delete" del boton
     public function delete($id)
     {
+        $taskToDelete = TaskModel::find($id);
 
+        if(!is_null($taskToDelete))
+        {
+            $taskToDelete->delete();
+            $this->emitUp('taskSaved', 'Tarea Eliminada Correctamente...');
+            $this->mount();
+        }
     }
 
     //método para guardar el nuevo registro, se manda llamar desde el evento wire:submit del formulario
@@ -60,6 +68,15 @@ class Task extends Component
         $this->emitUp('taskSaved', 'Tarea Guardada Correctamente...');
     }
 
+
+    public function done(TaskModel $task)
+    {
+        $task->update([
+            'done' => !$task->done
+        ]);
+
+        $this->mount();
+    }
 
     public function render()
     {
